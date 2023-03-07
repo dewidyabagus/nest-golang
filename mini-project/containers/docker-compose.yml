@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  proxy-server:
+    image: nginx:alpine
+    container_name: proxy-server
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.1"
+          memory: 16m
+        limits:
+          cpus: "0.25"
+          memory: 32m
+    ports:
+      - "7000:80"
+    volumes:
+      - "./config/nginx.conf:/etc/nginx/conf.d/default.conf:rw"
+  db-users:
+    image: mysql:8.0.30-oracle
+    container_name: db-users
+    environment:
+      MYSQL_ROOT_PASSWORD: "qwerty123"
+      MYSQL_DATABASE: "users"
+    command: --max_connections=5 --tmp_table_size=8M --innodb_buffer_pool_size=32M --read_buffer_size=60K --thread_cache_size=2
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.5"
+          memory: 350m
+        limits:
+          cpus: "0.7"
+          memory: 512m
+    ports:
+      - "3308:3306"
+    restart: on-failure
